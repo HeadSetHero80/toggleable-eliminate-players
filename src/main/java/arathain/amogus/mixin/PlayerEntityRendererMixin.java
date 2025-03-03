@@ -22,7 +22,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Abs
 
     @Inject(method = "renderLabelIfPresent(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At("HEAD"), cancellable = true)
     private void eplayers$actuallyDontRenderLabelIfPresent(AbstractClientPlayerEntity abstractClientPlayerEntity, Text text, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
-        if (EliminatePlayers.bannedUuids.contains(abstractClientPlayerEntity.getUuid())) {
+        if (EliminatePlayers.enabled && EliminatePlayers.bannedUuids.contains(abstractClientPlayerEntity.getUuid())) {
             ci.cancel();
         }
     }

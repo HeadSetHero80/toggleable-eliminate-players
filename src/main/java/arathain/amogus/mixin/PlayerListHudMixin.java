@@ -13,7 +13,9 @@ import java.util.List;
 public class PlayerListHudMixin {
     @ModifyVariable(method = "render", at = @At(value = "INVOKE_ASSIGN", target = "Lcom/google/common/collect/Ordering;sortedCopy(Ljava/lang/Iterable;)Ljava/util/List;"), index = 6)
     private List<PlayerListEntry> eplayers$modifyDeathMessage(List<PlayerListEntry> list) {
-        list.removeIf((entry) -> EliminatePlayers.bannedUuids.contains(entry.getProfile().getId()));
+        if (EliminatePlayers.enabled) {
+            list.removeIf((entry) -> EliminatePlayers.bannedUuids.contains(entry.getProfile().getId()));
+        }
         return list;
     }
 }

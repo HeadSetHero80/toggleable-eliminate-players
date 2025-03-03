@@ -31,11 +31,12 @@ public abstract class PlayerManagerMixin {
 
     @WrapWithCondition(method = "onPlayerConnect", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/PlayerManager;method_43514(Lnet/minecraft/text/Text;Z)V"))
     private boolean eplayers$playerLeave(PlayerManager manager, Text text, boolean bl, ClientConnection connect, ServerPlayerEntity player) {
-        return !EliminatePlayers.bannedUuids.contains(player.getUuid());
+        return !(EliminatePlayers.enabled && EliminatePlayers.bannedUuids.contains(player.getUuid()));
     }
+
     @Inject(method = "method_43512", at = @At("HEAD"), cancellable = true)
     private void eplayers$actuallyDontBroadcast(Text message, Function<ServerPlayerEntity, Text> playerMessageFactory, boolean bl, CallbackInfo ci) {
-        if (message.asComponent() instanceof TranslatableComponent transCon) {
+        if (EliminatePlayers.enabled && message.asComponent() instanceof TranslatableComponent transCon) {
             String Key = transCon.getKey();
             Optional<Object> texts = Arrays.stream(transCon.getArgs()).filter(obj -> obj instanceof Text text).findFirst();
             if (Key.equals("multiplayer.player.left") && texts.isPresent() && ((Text)texts.get()).getString().contains("Mouthpiece")) {
@@ -43,19 +44,23 @@ public abstract class PlayerManagerMixin {
             }
         }
     }
+
     @Inject(method = "method_44791", at = @At("HEAD"), cancellable = true)
     private void eplayers$noBroadcasty(C_zzdolisx message, Predicate<ServerPlayerEntity> shouldSendFiltered, @Nullable ServerPlayerEntity sender, C_tzcijmwg sourceProfile, MessageType.C_iocvgdxe params, CallbackInfo ci) {
-        if(message.method_44125().getString().startsWith("/")) return;
-        if(sender == null) return;
-        if(EliminatePlayers.bannedUuids.contains(sender.getUuid())) {
+        if (EliminatePlayers.enabled && message.method_44125().getString().startsWith("/")) return;
+        if (EliminatePlayers.enabled && sender == null) return;
+        if (EliminatePlayers.enabled && EliminatePlayers.bannedUuids.contains(sender.getUuid())) {
             ci.cancel();
         }
     }
+
     @ModifyReturnValue(method = "getPlayerNames", at = @At("RETURN"))
     private String[] eplayers$dontGetAllPlayersArgType(String[] original) {
-        for(int i = 0; i < this.players.size(); ++i) {
-            if(!EliminatePlayers.bannedUuids.contains(this.players.get(i).getGameProfile().getId())) {
-                original[i] = this.players.get(i).getGameProfile().getName();
+        if (EliminatePlayers.enabled) {
+            for (int i = 0; i < this.players.size(); ++i) {
+                if (!EliminatePlayers.bannedUuids.contains(this.players.get(i).getGameProfile().getId())) {
+                    original[i] = this.players.get(i).getGameProfile().getName();
+                }
             }
         }
         return original;

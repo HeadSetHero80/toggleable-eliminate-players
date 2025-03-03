@@ -22,12 +22,15 @@ public class ServerCommandSourceMixin {
 
     @ModifyReturnValue(method = "getPlayerNames", at = @At("RETURN"))
     private Collection<String> eplayers$dontGetAllPlayersArgType(Collection<String> original) {
-        List<String> list = Lists.newArrayList();
-        for(ServerPlayerEntity playerListEntry : this.server.getPlayerManager().getPlayerList()) {
-            if(EliminatePlayers.bannedUuids.contains(playerListEntry.getUuid()))
-                list.add(playerListEntry.getEntityName());
+        if (EliminatePlayers.enabled) {
+            List<String> list = Lists.newArrayList();
+            for (ServerPlayerEntity playerListEntry : this.server.getPlayerManager().getPlayerList()) {
+                if (EliminatePlayers.bannedUuids.contains(playerListEntry.getUuid())) {
+                    list.add(playerListEntry.getEntityName());
+                }
+            }
+            original.removeAll(list);
         }
-        original.removeAll(list);
         return original;
     }
 }

@@ -13,7 +13,9 @@ import java.util.Collection;
 public class EntityArgumentTypeMixin {
     @ModifyReturnValue(method = "getPlayers", at = @At("RETURN"))
     private static Collection<ServerPlayerEntity> eplayers$dontGetAllPlayersArgType(Collection<ServerPlayerEntity> original) {
-        original.removeIf((serverPlayerEntity -> EliminatePlayers.bannedUuids.contains(serverPlayerEntity.getUuid())));
+        if (EliminatePlayers.enabled) {
+            original.removeIf((serverPlayerEntity -> EliminatePlayers.bannedUuids.contains(serverPlayerEntity.getUuid())));
+        }
         return original;
     }
 }

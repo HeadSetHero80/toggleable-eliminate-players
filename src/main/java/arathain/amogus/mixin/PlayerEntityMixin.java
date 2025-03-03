@@ -20,21 +20,21 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     }
     @Inject(method = "dropInventory", at = @At("HEAD"), cancellable = true)
     private void eplayers$dropInv(CallbackInfo ci) {
-        if(EliminatePlayers.bannedUuids.contains(this.getUuid())) {
+        if (EliminatePlayers.enabled && EliminatePlayers.bannedUuids.contains(this.getUuid())) {
             ci.cancel();
         }
     }
 
     @Inject(method = "getName", at = @At("HEAD"), cancellable = true)
     private void eplayers$getName(CallbackInfoReturnable<Text> cir) {
-        if(EliminatePlayers.bannedUuids.contains(this.getUuid())) {
-            cir.setReturnValue(Text.literal("Mouthpiece"));
+        if (EliminatePlayers.enabled && EliminatePlayers.bannedUuids.contains(this.getUuid())) {
+            cir.setReturnValue(Text.literal("Eclipse"));
         }
     }
     @Inject(method = "getEntityName", at = @At("HEAD"), cancellable = true)
     private void eplayers$getEntityName(CallbackInfoReturnable<String> cir) {
-        if(EliminatePlayers.bannedUuids.contains(this.getUuid())) {
-            cir.setReturnValue("Mouthpiece");
+        if (EliminatePlayers.enabled && EliminatePlayers.bannedUuids.contains(this.getUuid())) {
+            cir.setReturnValue("Eclipse");
         }
     }
 }
